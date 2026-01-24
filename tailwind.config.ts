@@ -14,7 +14,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ['Playfair Display', 'Georgia', 'serif'],
+        display: ['Space Grotesk', 'system-ui', 'sans-serif'],
         body: ['Inter', 'system-ui', 'sans-serif'],
       },
       colors: {
@@ -51,21 +51,27 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // Custom travel theme colors
-        ocean: {
-          DEFAULT: "hsl(var(--ocean))",
-          light: "hsl(var(--ocean-light))",
+        // Economic indicators
+        gain: {
+          DEFAULT: "hsl(var(--gain))",
+          light: "hsl(var(--gain-light))",
         },
-        sand: {
-          DEFAULT: "hsl(var(--sand))",
-          warm: "hsl(var(--sand-warm))",
+        loss: {
+          DEFAULT: "hsl(var(--loss))",
+          light: "hsl(var(--loss-light))",
         },
-        sunset: {
-          DEFAULT: "hsl(var(--sunset))",
-          light: "hsl(var(--sunset-light))",
+        neutral: {
+          DEFAULT: "hsl(var(--neutral))",
+          light: "hsl(var(--neutral-light))",
         },
-        gold: "hsl(var(--gold))",
-        forest: "hsl(var(--forest))",
+        // Chart colors
+        chart: {
+          1: "hsl(var(--chart-1))",
+          2: "hsl(var(--chart-2))",
+          3: "hsl(var(--chart-3))",
+          4: "hsl(var(--chart-4))",
+          5: "hsl(var(--chart-5))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -95,11 +101,16 @@ export default {
           "0%, 100%": { transform: "translateY(0)" },
           "50%": { transform: "translateY(-10px)" },
         },
+        "shimmer": {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "float": "float 3s ease-in-out infinite",
+        "shimmer": "shimmer 2s linear infinite",
       },
     },
   },
