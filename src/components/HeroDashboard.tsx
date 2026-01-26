@@ -43,7 +43,7 @@ const HeroDashboard = () => {
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10"
+                className="border-primary-foreground text-primary-foreground bg-transparent hover:bg-primary-foreground/20"
               >
                 Calculadora
                 <ArrowRight className="ml-2 w-5 h-5" />
