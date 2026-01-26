@@ -1,5 +1,6 @@
 import Header from "@/components/Header";
 import HeroDashboard from "@/components/HeroDashboard";
+import InteractiveMap from "@/components/InteractiveMap";
 import DevaluationRanking from "@/components/DevaluationRanking";
 import CostCalculator from "@/components/CostCalculator";
 import MetricsDashboard from "@/components/MetricsDashboard";
@@ -11,6 +12,7 @@ const Index = () => {
       <Header />
       <main>
         <HeroDashboard />
+        <InteractiveMap />
         <DevaluationRanking />
         <CostCalculator />
         <MetricsDashboard />
