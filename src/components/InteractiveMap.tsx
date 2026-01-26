@@ -29,6 +29,29 @@ const countryCodeToGeoId: Record<string, string> = {
   PH: "608", // Philippines
   MA: "504", // Morocco
   PL: "616", // Poland
+  VE: "862", // Venezuela
+  LB: "422", // Lebanon
+  LK: "144", // Sri Lanka
+  NG: "566", // Nigeria
+  PK: "586", // Pakistan
+  GH: "288", // Ghana
+  KE: "404", // Kenya
+  UA: "804", // Ukraine
+  RU: "643", // Russia
+  JP: "392", // Japan
+  CL: "152", // Chile
+  PE: "604", // Peru
+  CZ: "203", // Czech Republic
+  RO: "642", // Romania
+  IN: "356", // India
+  MY: "458", // Malaysia
+  BD: "050", // Bangladesh
+  ET: "231", // Ethiopia
+  KH: "116", // Cambodia
+  NP: "524", // Nepal
+  LA: "418", // Laos
+  CR: "188", // Costa Rica
+  UY: "858", // Uruguay
 };
 
 // Invertir el mapeo para buscar por geoId
