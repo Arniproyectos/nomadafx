@@ -14,7 +14,131 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      countries: {
+        Row: {
+          big_mac_index: number
+          code: string
+          continent: Database["public"]["Enums"]["continent_type"]
+          created_at: string
+          currency: string
+          devaluation_vs_usd: number
+          entertainment_cost: number
+          flag: string
+          food_cost: number
+          highlights: string[]
+          id: string
+          monthly_living_cost: number
+          name: string
+          rent_cost: number
+          risk_level: Database["public"]["Enums"]["risk_level_type"]
+          transport_cost: number
+          trend: Database["public"]["Enums"]["trend_type"]
+          updated_at: string
+        }
+        Insert: {
+          big_mac_index?: number
+          code: string
+          continent: Database["public"]["Enums"]["continent_type"]
+          created_at?: string
+          currency: string
+          devaluation_vs_usd?: number
+          entertainment_cost?: number
+          flag: string
+          food_cost?: number
+          highlights?: string[]
+          id?: string
+          monthly_living_cost?: number
+          name: string
+          rent_cost?: number
+          risk_level?: Database["public"]["Enums"]["risk_level_type"]
+          transport_cost?: number
+          trend?: Database["public"]["Enums"]["trend_type"]
+          updated_at?: string
+        }
+        Update: {
+          big_mac_index?: number
+          code?: string
+          continent?: Database["public"]["Enums"]["continent_type"]
+          created_at?: string
+          currency?: string
+          devaluation_vs_usd?: number
+          entertainment_cost?: number
+          flag?: string
+          food_cost?: number
+          highlights?: string[]
+          id?: string
+          monthly_living_cost?: number
+          name?: string
+          rent_cost?: number
+          risk_level?: Database["public"]["Enums"]["risk_level_type"]
+          transport_cost?: number
+          trend?: Database["public"]["Enums"]["trend_type"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      exchange_rate_history: {
+        Row: {
+          country_id: string
+          id: string
+          month: string
+          rate: number
+          recorded_at: string
+        }
+        Insert: {
+          country_id: string
+          id?: string
+          month: string
+          rate: number
+          recorded_at?: string
+        }
+        Update: {
+          country_id?: string
+          id?: string
+          month?: string
+          rate?: number
+          recorded_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exchange_rate_history_country_id_fkey"
+            columns: ["country_id"]
+            isOneToOne: false
+            referencedRelation: "countries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reference_countries: {
+        Row: {
+          avg_monthly_cost: number
+          code: string
+          created_at: string
+          currency: string
+          flag: string
+          id: string
+          name: string
+        }
+        Insert: {
+          avg_monthly_cost?: number
+          code: string
+          created_at?: string
+          currency: string
+          flag: string
+          id?: string
+          name: string
+        }
+        Update: {
+          avg_monthly_cost?: number
+          code?: string
+          created_at?: string
+          currency?: string
+          flag?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +147,9 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      continent_type: "america" | "europe" | "asia" | "africa" | "oceania"
+      risk_level_type: "low" | "medium" | "high"
+      trend_type: "up" | "down" | "stable"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +276,10 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      continent_type: ["america", "europe", "asia", "africa", "oceania"],
+      risk_level_type: ["low", "medium", "high"],
+      trend_type: ["up", "down", "stable"],
+    },
   },
 } as const
