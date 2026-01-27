@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { TrendingDown, TrendingUp, Minus, DollarSign, MapPin, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 
 const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
@@ -110,8 +111,15 @@ const InteractiveMap = () => {
       ? TrendingDown 
       : Minus;
 
+  const { ref, isVisible } = useScrollAnimation({ threshold: 0.1 });
+
   return (
-    <section className="py-16 px-4 md:px-8 bg-gradient-to-b from-background to-muted/30">
+    <section 
+      ref={ref as React.RefObject<HTMLElement>}
+      className={`py-16 px-4 md:px-8 bg-gradient-to-b from-background to-muted/30 transition-all duration-700 ease-out ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+      }`}
+    >
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <Badge className="mb-4 bg-accent/20 text-accent border-accent/30">

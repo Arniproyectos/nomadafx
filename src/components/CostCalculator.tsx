@@ -3,6 +3,7 @@ import { Calculator, ArrowRight, DollarSign, Home, Utensils, Car, PartyPopper } 
 import { countriesData, referenceCountries, CountryData, ReferenceCountry } from "@/lib/countryData";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 
 const CostCalculator = () => {
   const [originCountry, setOriginCountry] = useState<ReferenceCountry>(referenceCountries[0]);
@@ -28,8 +29,16 @@ const CostCalculator = () => {
     ? calculations.find(c => c.id === selectedDestination.id) 
     : calculations[0];
 
+  const { ref, isVisible } = useScrollAnimation({ threshold: 0.1 });
+
   return (
-    <section id="calculator" className="py-16 bg-muted/30">
+    <section 
+      id="calculator" 
+      ref={ref as React.RefObject<HTMLElement>}
+      className={`py-16 bg-muted/30 transition-all duration-700 ease-out ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+      }`}
+    >
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-12">

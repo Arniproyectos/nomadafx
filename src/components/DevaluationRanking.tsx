@@ -3,6 +3,7 @@ import { TrendingDown, Filter, Globe2 } from "lucide-react";
 import { countriesData, sortByOpportunity, CountryData } from "@/lib/countryData";
 import CountryCard from "./CountryCard";
 import { Button } from "@/components/ui/button";
+import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 
 type FilterType = 'all' | 'america' | 'europe' | 'asia' | 'africa';
 type SortType = 'opportunity' | 'devaluation' | 'cost';
@@ -42,9 +43,16 @@ const DevaluationRanking = () => {
   };
 
   const countries = getFilteredAndSortedCountries();
+  const { ref, isVisible } = useScrollAnimation({ threshold: 0.05 });
 
   return (
-    <section id="rankings" className="py-16 bg-background">
+    <section 
+      id="rankings" 
+      ref={ref as React.RefObject<HTMLElement>}
+      className={`py-16 bg-background transition-all duration-700 ease-out ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+      }`}
+    >
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">

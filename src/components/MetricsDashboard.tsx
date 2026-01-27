@@ -1,6 +1,7 @@
 import { TrendingDown, TrendingUp, DollarSign, Landmark, Globe2, AlertCircle } from "lucide-react";
 import { countriesData } from "@/lib/countryData";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from "recharts";
+import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 
 const MetricsDashboard = () => {
   // Calculate aggregate stats
@@ -26,8 +27,16 @@ const MetricsDashboard = () => {
   // Sample historical data for main chart
   const trendData = mostDevalued.historicalData;
 
+  const { ref, isVisible } = useScrollAnimation({ threshold: 0.1 });
+
   return (
-    <section id="metrics" className="py-16 bg-background">
+    <section 
+      id="metrics" 
+      ref={ref as React.RefObject<HTMLElement>}
+      className={`py-16 bg-background transition-all duration-700 ease-out ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+      }`}
+    >
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-12">
