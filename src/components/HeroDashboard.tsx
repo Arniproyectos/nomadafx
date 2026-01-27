@@ -36,6 +36,7 @@ const HeroDashboard = () => {
               <Button 
                 size="lg" 
                 className="bg-accent hover:bg-accent/90 text-accent-foreground font-semibold"
+                onClick={() => document.getElementById('rankings')?.scrollIntoView({ behavior: 'smooth' })}
               >
                 Ver Rankings
                 <TrendingDown className="ml-2 w-5 h-5" />
@@ -44,6 +45,7 @@ const HeroDashboard = () => {
                 size="lg" 
                 variant="outline" 
                 className="border-primary-foreground text-primary-foreground bg-transparent hover:bg-primary-foreground/20"
+                onClick={() => document.getElementById('calculator')?.scrollIntoView({ behavior: 'smooth' })}
               >
                 Calculadora
                 <ArrowRight className="ml-2 w-5 h-5" />
