@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { TrendingDown, Filter, Globe2 } from "lucide-react";
-import { countriesData, sortByOpportunity, CountryData } from "@/lib/countryData";
+import { useCountries, sortByOpportunity, CountryData } from "@/hooks/use-countries";
 import CountryCard from "./CountryCard";
 import { Button } from "@/components/ui/button";
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type FilterType = 'all' | 'america' | 'europe' | 'asia' | 'africa';
 type SortType = 'opportunity' | 'devaluation' | 'cost';
@@ -12,6 +13,8 @@ const DevaluationRanking = () => {
   const [filter, setFilter] = useState<FilterType>('all');
   const [sortBy, setSortBy] = useState<SortType>('opportunity');
   const [selectedCountry, setSelectedCountry] = useState<CountryData | null>(null);
+  
+  const { data: countriesData, isLoading } = useCountries();
 
   const filters: { value: FilterType; label: string; icon: string }[] = [
     { value: 'all', label: 'Todos', icon: '🌍' },
@@ -28,6 +31,8 @@ const DevaluationRanking = () => {
   ];
 
   const getFilteredAndSortedCountries = () => {
+    if (!countriesData) return [];
+    
     let filtered = filter === 'all' 
       ? countriesData 
       : countriesData.filter(c => c.continent === filter);
@@ -59,7 +64,7 @@ const DevaluationRanking = () => {
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-gain-light text-gain rounded-full text-sm font-medium mb-3">
               <TrendingDown className="w-4 h-4" />
-              Actualizado hoy
+              Datos en tiempo real
             </div>
             <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground">
               Rankings de Oportunidad
@@ -73,7 +78,7 @@ const DevaluationRanking = () => {
           <div className="flex items-center gap-2">
             <Globe2 className="w-5 h-5 text-muted-foreground" />
             <span className="text-sm text-muted-foreground">
-              {countries.length} destinos disponibles
+              {isLoading ? "Cargando..." : `${countries.length} destinos disponibles`}
             </span>
           </div>
         </div>
@@ -114,19 +119,40 @@ const DevaluationRanking = () => {
         </div>
 
         {/* Rankings Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {countries.map((country, index) => (
-            <CountryCard
-              key={country.id}
-              country={country}
-              rank={index + 1}
-              isSelected={selectedCountry?.id === country.id}
-              onSelect={setSelectedCountry}
-            />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="bg-card border border-border rounded-xl p-4">
+                <div className="flex items-center gap-3 mb-4">
+                  <Skeleton className="w-8 h-8 rounded-lg" />
+                  <Skeleton className="w-10 h-10 rounded" />
+                  <div className="flex-1">
+                    <Skeleton className="h-5 w-24 mb-1" />
+                    <Skeleton className="h-4 w-32" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-3/4" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {countries.map((country, index) => (
+              <CountryCard
+                key={country.id}
+                country={country}
+                rank={index + 1}
+                isSelected={selectedCountry?.id === country.id}
+                onSelect={setSelectedCountry}
+              />
+            ))}
+          </div>
+        )}
 
-        {countries.length === 0 && (
+        {!isLoading && countries.length === 0 && (
           <div className="text-center py-12">
             <Globe2 className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
             <p className="text-muted-foreground">

@@ -1,5 +1,5 @@
 import { TrendingDown, TrendingUp, Minus, DollarSign, MapPin, AlertTriangle } from "lucide-react";
-import { CountryData } from "@/lib/countryData";
+import { CountryData } from "@/hooks/use-countries";
 import { cn } from "@/lib/utils";
 
 interface CountryCardProps {

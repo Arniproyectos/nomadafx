@@ -1,9 +1,19 @@
 import { TrendingDown, ArrowRight, Globe2, DollarSign, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { countriesData, sortByOpportunity } from "@/lib/countryData";
+import { useCountries, sortByOpportunity } from "@/hooks/use-countries";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const HeroDashboard = () => {
-  const topOpportunities = sortByOpportunity(countriesData).slice(0, 3);
+  const { data: countries, isLoading } = useCountries();
+  
+  const topOpportunities = countries ? sortByOpportunity(countries).slice(0, 3) : [];
+  const totalCountries = countries?.length || 0;
+  const maxDevaluation = countries 
+    ? Math.abs(Math.min(...countries.map(c => c.devaluationVsUSD)))
+    : 0;
+  const minCost = countries 
+    ? Math.min(...countries.map(c => c.monthlyLivingCost))
+    : 0;
 
   return (
     <section className="relative overflow-hidden bg-gradient-hero text-primary-foreground">
@@ -55,15 +65,27 @@ const HeroDashboard = () => {
             {/* Quick Stats */}
             <div className="grid grid-cols-3 gap-4 pt-6 border-t border-primary-foreground/20">
               <div>
-                <div className="text-2xl md:text-3xl font-bold">{countriesData.length}</div>
+                {isLoading ? (
+                  <Skeleton className="h-8 w-12 bg-primary-foreground/20" />
+                ) : (
+                  <div className="text-2xl md:text-3xl font-bold">{totalCountries}</div>
+                )}
                 <div className="text-sm text-primary-foreground/70">Países analizados</div>
               </div>
               <div>
-                <div className="text-2xl md:text-3xl font-bold">54%</div>
+                {isLoading ? (
+                  <Skeleton className="h-8 w-16 bg-primary-foreground/20" />
+                ) : (
+                  <div className="text-2xl md:text-3xl font-bold">{maxDevaluation}%</div>
+                )}
                 <div className="text-sm text-primary-foreground/70">Max. devaluación</div>
               </div>
               <div>
-                <div className="text-2xl md:text-3xl font-bold">$480</div>
+                {isLoading ? (
+                  <Skeleton className="h-8 w-16 bg-primary-foreground/20" />
+                ) : (
+                  <div className="text-2xl md:text-3xl font-bold">${minCost}</div>
+                )}
                 <div className="text-sm text-primary-foreground/70">Min. costo/mes</div>
               </div>
             </div>
@@ -76,43 +98,62 @@ const HeroDashboard = () => {
             </h3>
             
             <div className="space-y-3">
-              {topOpportunities.map((country, index) => (
-                <div
-                  key={country.id}
-                  className="group bg-primary-foreground/10 hover:bg-primary-foreground/15 backdrop-blur-sm border border-primary-foreground/20 rounded-xl p-4 transition-all cursor-pointer"
-                >
-                  <div className="flex items-center gap-4">
-                    {/* Rank */}
-                    <div className="w-8 h-8 rounded-lg bg-accent/20 flex items-center justify-center font-bold text-accent">
-                      {index + 1}
-                    </div>
-
-                    {/* Flag & Name */}
-                    <div className="flex items-center gap-3 flex-1">
-                      <span className="text-3xl">{country.flag}</span>
-                      <div>
-                        <div className="font-semibold">{country.name}</div>
-                        <div className="text-sm text-primary-foreground/70 flex items-center gap-2">
-                          <MapPin className="w-3 h-3" />
-                          {country.highlights[0]}
-                        </div>
+              {isLoading ? (
+                [...Array(3)].map((_, i) => (
+                  <div key={i} className="bg-primary-foreground/10 backdrop-blur-sm border border-primary-foreground/20 rounded-xl p-4">
+                    <div className="flex items-center gap-4">
+                      <Skeleton className="w-8 h-8 rounded-lg bg-primary-foreground/20" />
+                      <Skeleton className="w-10 h-10 rounded bg-primary-foreground/20" />
+                      <div className="flex-1">
+                        <Skeleton className="h-5 w-24 mb-1 bg-primary-foreground/20" />
+                        <Skeleton className="h-4 w-32 bg-primary-foreground/20" />
                       </div>
-                    </div>
-
-                    {/* Devaluation */}
-                    <div className="text-right">
-                      <div className="flex items-center gap-1 text-loss font-bold">
-                        <TrendingDown className="w-4 h-4" />
-                        {country.devaluationVsUSD}%
-                      </div>
-                      <div className="text-sm text-primary-foreground/70 flex items-center gap-1">
-                        <DollarSign className="w-3 h-3" />
-                        ${country.monthlyLivingCost}/mes
+                      <div className="text-right">
+                        <Skeleton className="h-5 w-16 mb-1 bg-primary-foreground/20" />
+                        <Skeleton className="h-4 w-20 bg-primary-foreground/20" />
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                topOpportunities.map((country, index) => (
+                  <div
+                    key={country.id}
+                    className="group bg-primary-foreground/10 hover:bg-primary-foreground/15 backdrop-blur-sm border border-primary-foreground/20 rounded-xl p-4 transition-all cursor-pointer"
+                  >
+                    <div className="flex items-center gap-4">
+                      {/* Rank */}
+                      <div className="w-8 h-8 rounded-lg bg-accent/20 flex items-center justify-center font-bold text-accent">
+                        {index + 1}
+                      </div>
+
+                      {/* Flag & Name */}
+                      <div className="flex items-center gap-3 flex-1">
+                        <span className="text-3xl">{country.flag}</span>
+                        <div>
+                          <div className="font-semibold">{country.name}</div>
+                          <div className="text-sm text-primary-foreground/70 flex items-center gap-2">
+                            <MapPin className="w-3 h-3" />
+                            {country.highlights[0]}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Devaluation */}
+                      <div className="text-right">
+                        <div className="flex items-center gap-1 text-loss font-bold">
+                          <TrendingDown className="w-4 h-4" />
+                          {country.devaluationVsUSD}%
+                        </div>
+                        <div className="text-sm text-primary-foreground/70 flex items-center gap-1">
+                          <DollarSign className="w-3 h-3" />
+                          ${country.monthlyLivingCost}/mes
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
 
             <a 

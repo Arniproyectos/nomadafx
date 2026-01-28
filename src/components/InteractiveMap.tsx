@@ -5,12 +5,13 @@ import {
   Geography,
   ZoomableGroup,
 } from "react-simple-maps";
-import { countriesData, CountryData } from "@/lib/countryData";
+import { useCountries, CountryData } from "@/hooks/use-countries";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { TrendingDown, TrendingUp, Minus, DollarSign, MapPin, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
@@ -77,12 +78,15 @@ const InteractiveMap = () => {
   const [tooltipContent, setTooltipContent] = useState<string>("");
   const [position, setPosition] = useState({ coordinates: [0, 20] as [number, number], zoom: 1 });
 
+  const { data: countriesData, isLoading } = useCountries();
+
   const countryByCode = useMemo(() => {
+    if (!countriesData) return {};
     return countriesData.reduce((acc, country) => {
       acc[country.code] = country;
       return acc;
     }, {} as Record<string, CountryData>);
-  }, []);
+  }, [countriesData]);
 
   const handleMoveEnd = (position: { coordinates: [number, number]; zoom: number }) => {
     setPosition(position);

@@ -1,16 +1,24 @@
 import { useState, useMemo } from "react";
 import { Calculator, ArrowRight, DollarSign, Home, Utensils, Car, PartyPopper } from "lucide-react";
-import { countriesData, referenceCountries, CountryData, ReferenceCountry } from "@/lib/countryData";
+import { useCountries, useReferenceCountries, CountryData } from "@/hooks/use-countries";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const CostCalculator = () => {
-  const [originCountry, setOriginCountry] = useState<ReferenceCountry>(referenceCountries[0]);
+  const { data: countriesData, isLoading: countriesLoading } = useCountries();
+  const { data: referenceCountriesData, isLoading: refLoading } = useReferenceCountries();
+  
+  const [originCountryId, setOriginCountryId] = useState<string>("");
   const [monthlyBudget, setMonthlyBudget] = useState<number>(2500);
   const [selectedDestination, setSelectedDestination] = useState<CountryData | null>(null);
 
+  const originCountry = referenceCountriesData?.find(c => c.id === originCountryId) || referenceCountriesData?.[0];
+
   const calculations = useMemo(() => {
+    if (!countriesData) return [];
+    
     return countriesData.map(country => {
       const monthsAffordable = Math.floor(monthlyBudget / country.monthlyLivingCost);
       const savingsPerMonth = monthlyBudget - country.monthlyLivingCost;
@@ -23,13 +31,14 @@ const CostCalculator = () => {
         purchasingPowerMultiplier,
       };
     }).sort((a, b) => b.purchasingPowerMultiplier - a.purchasingPowerMultiplier);
-  }, [monthlyBudget]);
+  }, [monthlyBudget, countriesData]);
 
   const selectedCalc = selectedDestination 
     ? calculations.find(c => c.id === selectedDestination.id) 
     : calculations[0];
 
   const { ref, isVisible } = useScrollAnimation({ threshold: 0.1 });
+  const isLoading = countriesLoading || refLoading;
 
   return (
     <section 
@@ -65,17 +74,21 @@ const CostCalculator = () => {
                 <label className="block text-sm font-medium text-muted-foreground mb-2">
                   País de origen
                 </label>
-                <select
-                  value={originCountry.id}
-                  onChange={(e) => setOriginCountry(referenceCountries.find(c => c.id === e.target.value) || referenceCountries[0])}
-                  className="w-full bg-background border border-border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary"
-                >
-                  {referenceCountries.map((country) => (
-                    <option key={country.id} value={country.id}>
-                      {country.flag} {country.name} ({country.currency})
-                    </option>
-                  ))}
-                </select>
+                {isLoading ? (
+                  <Skeleton className="w-full h-12" />
+                ) : (
+                  <select
+                    value={originCountryId || originCountry?.id || ""}
+                    onChange={(e) => setOriginCountryId(e.target.value)}
+                    className="w-full bg-background border border-border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary"
+                  >
+                    {referenceCountriesData?.map((country) => (
+                      <option key={country.id} value={country.id}>
+                        {country.flag} {country.name} ({country.currency})
+                      </option>
+                    ))}
+                  </select>
+                )}
               </div>
 
               {/* Monthly Budget */}
@@ -130,40 +143,56 @@ const CostCalculator = () => {
             <div className="bg-card border border-border rounded-xl p-6 shadow-soft">
               <h3 className="font-display font-semibold text-lg mb-4">Mejores destinos para tu presupuesto</h3>
               
-              <div className="space-y-3">
-                {calculations.slice(0, 5).map((calc, index) => (
-                  <button
-                    key={calc.id}
-                    onClick={() => setSelectedDestination(calc)}
-                    className={cn(
-                      "w-full flex items-center gap-3 p-3 rounded-lg border transition-all text-left",
-                      selectedCalc?.id === calc.id 
-                        ? "border-primary bg-primary/5" 
-                        : "border-border hover:border-primary/50"
-                    )}
-                  >
-                    <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center font-bold text-sm">
-                      {index + 1}
-                    </div>
-                    <span className="text-2xl">{calc.flag}</span>
-                    <div className="flex-1 min-w-0">
-                      <div className="font-medium truncate">{calc.name}</div>
-                      <div className="text-xs text-muted-foreground">
-                        ${calc.monthlyLivingCost}/mes
+              {isLoading ? (
+                <div className="space-y-3">
+                  {[...Array(5)].map((_, i) => (
+                    <div key={i} className="flex items-center gap-3 p-3 rounded-lg border border-border">
+                      <Skeleton className="w-8 h-8 rounded-lg" />
+                      <Skeleton className="w-10 h-10 rounded" />
+                      <div className="flex-1">
+                        <Skeleton className="h-5 w-24 mb-1" />
+                        <Skeleton className="h-4 w-16" />
                       </div>
+                      <Skeleton className="h-6 w-12" />
                     </div>
-                    <div className="text-right">
-                      <div className="text-gain font-bold">{calc.purchasingPowerMultiplier.toFixed(1)}x</div>
-                      <div className="text-xs text-muted-foreground">poder</div>
-                    </div>
-                  </button>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {calculations.slice(0, 5).map((calc, index) => (
+                    <button
+                      key={calc.id}
+                      onClick={() => setSelectedDestination(calc)}
+                      className={cn(
+                        "w-full flex items-center gap-3 p-3 rounded-lg border transition-all text-left",
+                        selectedCalc?.id === calc.id 
+                          ? "border-primary bg-primary/5" 
+                          : "border-border hover:border-primary/50"
+                      )}
+                    >
+                      <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center font-bold text-sm">
+                        {index + 1}
+                      </div>
+                      <span className="text-2xl">{calc.flag}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium truncate">{calc.name}</div>
+                        <div className="text-xs text-muted-foreground">
+                          ${calc.monthlyLivingCost}/mes
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-gain font-bold">{calc.purchasingPowerMultiplier.toFixed(1)}x</div>
+                        <div className="text-xs text-muted-foreground">poder</div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
           {/* Right - Results */}
-          {selectedCalc && (
+          {selectedCalc && !isLoading && (
             <div className="bg-card border border-border rounded-xl overflow-hidden shadow-medium">
               {/* Header */}
               <div className="bg-gradient-primary p-6 text-primary-foreground">
